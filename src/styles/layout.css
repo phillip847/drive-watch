@@ -13,11 +13,14 @@
 /* Top status bar */
 .topbar {
   grid-area: top;
+  padding-top: max(var(--space-2), env(safe-area-inset-top));
+  padding-left: max(var(--space-5), env(safe-area-inset-left));
+  padding-right: max(var(--space-5), env(safe-area-inset-right));
+  padding-bottom: var(--space-2);
   display: flex;
   align-items: center;
   gap: var(--space-4);
   flex-wrap: wrap;
-  padding: var(--space-2) var(--space-5);
   background: var(--surface);
   border-bottom: 1px solid var(--line);
 }
@@ -89,10 +92,13 @@ button.pill--toggle {
 /* Navigation rail */
 .rail {
   grid-area: rail;
+  padding-left: max(var(--space-2), env(safe-area-inset-left));
+  padding-bottom: max(var(--space-3), env(safe-area-inset-bottom));
+  padding-top: var(--space-3);
+  padding-right: var(--space-2);
   display: flex;
   flex-direction: column;
   gap: var(--space-1);
-  padding: var(--space-3) var(--space-2);
   background: var(--surface);
   border-right: 1px solid var(--line);
   overflow-y: auto;
@@ -153,6 +159,7 @@ button.rail-item {
 
 .content {
   grid-area: main;
+  padding-right: env(safe-area-inset-right);
   overflow-y: auto;
   min-width: 0;
 }
@@ -161,14 +168,18 @@ button.rail-item {
 @media (max-width: 719px) {
   .shell {
     grid-template-columns: 1fr;
-    grid-template-rows: auto 1fr var(--rail-h);
+    grid-template-rows: auto 1fr calc(var(--rail-h) + env(safe-area-inset-bottom));
     grid-template-areas:
       'top'
       'main'
       'rail';
   }
 
-  .topbar { padding: var(--space-2) var(--space-4); gap: var(--space-2); }
+  .topbar {
+    padding: max(var(--space-2), env(safe-area-inset-top)) max(var(--space-4), env(safe-area-inset-right))
+      var(--space-2) max(var(--space-4), env(safe-area-inset-left));
+    gap: var(--space-2);
+  }
   .brand-name { font-size: var(--fs-lg); }
   .topbar-pills { margin-left: 0; order: 3; width: 100%; flex-wrap: nowrap; }
   .pill { padding: 0 var(--space-3); font-size: 14px; gap: 6px; }
@@ -176,7 +187,8 @@ button.rail-item {
 
   .rail {
     flex-direction: row;
-    padding: var(--space-1);
+    padding: var(--space-1) max(var(--space-1), env(safe-area-inset-right))
+      max(var(--space-1), env(safe-area-inset-bottom)) max(var(--space-1), env(safe-area-inset-left));
     border-right: 0;
     border-top: 1px solid var(--line);
     overflow-x: auto;

@@ -26,13 +26,19 @@ export function ToastProvider({ children }) {
     [dismiss]
   );
 
+  const clear = useCallback(() => {
+    timers.current.forEach(clearTimeout);
+    timers.current.clear();
+    setToasts([]);
+  }, []);
+
   useEffect(() => {
     const map = timers.current;
     return () => map.forEach(clearTimeout);
   }, []);
 
   return (
-    <ToastContext.Provider value={{ show, dismiss }}>
+    <ToastContext.Provider value={{ show, dismiss, clear }}>
       {children}
       <div className="toasts" role="status" aria-live="polite">
         {toasts.map((t) => (

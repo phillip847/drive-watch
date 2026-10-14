@@ -132,11 +132,11 @@ export function AppProvider({ children }) {
           return { notice };
         }
         const time = Date.now();
-        dispatch({ type: 'QUEUE', item: { kind: 'notice', evidenceNo: payload.evidence.evidenceNo, payload, time } });
         dispatch({
           type: 'QUEUE',
           item: { kind: 'audit', action: `Saved notice for ${payload.evidence.evidenceNo} on tablet, pending`, time },
         });
+        dispatch({ type: 'QUEUE', item: { kind: 'notice', evidenceNo: payload.evidence.evidenceNo, payload, time } });
         return { queued: true };
       },
     };

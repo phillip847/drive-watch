@@ -51,6 +51,7 @@ export default function Layout() {
 
   async function handleSignOut() {
     await signOut();
+    toast.clear();
     navigate('/signin', { replace: true });
   }
 
@@ -58,6 +59,7 @@ export default function Layout() {
 
   return (
     <div className="shell">
+      <a className="skip-link" href="#main">Skip to content</a>
       <header className="topbar">
         <div className="brand">
           <SpeedSign limit={60} size={36} decorative />
@@ -100,9 +102,10 @@ export default function Layout() {
             <>
               <span className="rail-icon">
                 <Icon />
-                {count > 0 && <span className="badge num" aria-label={`${count} warnings`}>{count}</span>}
+                {count > 0 && <span className="badge num" aria-hidden="true">{count}</span>}
               </span>
               <span className="rail-label">{label}</span>
+              {count > 0 && <span className="sr-only">, {count} on current trip</span>}
             </>
           );
           return enabled ? (
@@ -121,7 +124,7 @@ export default function Layout() {
         </button>
       </nav>
 
-      <main className="content">
+      <main className="content" id="main" tabIndex={-1}>
         <Outlet />
       </main>
     </div>
