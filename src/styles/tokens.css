@@ -1,0 +1,87 @@
+/* DriveWatch design tokens
+   High-contrast palette for outdoor daylight use on tablets. */
+
+:root {
+  /* Surfaces & text */
+  --bg: #E9EDF0;
+  --surface: #FFFFFF;
+  --surface2: #F4F6F8;
+  --ink: #15212A;
+  --muted: #566672;
+  --line: #D2D9DF;
+
+  /* Status colours */
+  --red: #C8102E;
+  --amber: #A86C00;
+  --orange: #B54708;
+  --green: #2E7D4F;
+  --blue: #1C5D8C;
+
+  /* Soft backgrounds for status chips/banners */
+  --red-soft: #FBE3E6;
+  --amber-soft: #FBEFD5;
+  --orange-soft: #FCE6D6;
+  --green-soft: #DFF1E6;
+  --blue-soft: #DDEAF4;
+
+  /* Text on solid status colours */
+  --on-red: #FFFFFF;
+  --on-blue: #FFFFFF;
+
+  /* Typography */
+  --font-body: "Barlow", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-display: "Barlow Condensed", "Barlow", system-ui, sans-serif;
+
+  --fs-sm: 15px;
+  --fs-base: 18px;
+  --fs-lg: 22px;
+  --fs-xl: 28px;
+  --fs-2xl: 40px;
+  --fs-3xl: 56px;
+
+  /* Sizing */
+  --touch: 48px;
+  --radius: 10px;
+  --radius-lg: 16px;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+
+  --shadow: 0 1px 2px rgba(21, 33, 42, 0.08), 0 2px 8px rgba(21, 33, 42, 0.06);
+  --focus: 0 0 0 3px var(--surface), 0 0 0 6px var(--blue);
+
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0D1419;
+    --surface: #17222A;
+    --surface2: #1F2C35;
+    --ink: #F1F4F6;
+    --muted: #A3B1BB;
+    --line: #34444F;
+
+    --red: #FF5A6E;
+    --amber: #F2B33D;
+    --orange: #FF8A4C;
+    --green: #5CC98A;
+    --blue: #6CB2E8;
+
+    --red-soft: #3D1A20;
+    --amber-soft: #3A2B0E;
+    --orange-soft: #3D2214;
+    --green-soft: #15321F;
+    --blue-soft: #142B3D;
+
+    --on-red: #15212A;
+    --on-blue: #0D1419;
+
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 2px 8px rgba(0, 0, 0, 0.3);
+
+    color-scheme: dark;
+  }
+}

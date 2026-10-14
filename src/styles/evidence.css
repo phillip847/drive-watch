@@ -1,0 +1,115 @@
+.evidence {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.evidence-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+.evidence-head h1 { margin-bottom: var(--space-1); }
+.evidence-head p { margin: 0; }
+
+.evidence-head-sign {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex: none;
+}
+
+.evidence .note { margin: 0; }
+
+.facts-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-4) var(--space-5);
+  margin: 0;
+}
+
+.fact { min-width: 0; }
+.fact--wide { grid-column: 1 / -1; }
+
+.fact dt {
+  margin-bottom: 2px;
+  color: var(--muted);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.fact dd {
+  margin: 0;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.fact dd .num { white-space: nowrap; }
+
+.fact-sub {
+  display: block;
+  color: var(--muted);
+  font-weight: 500;
+}
+
+.fact-big {
+  font-size: var(--fs-2xl);
+  line-height: 1;
+}
+
+code.fingerprint {
+  display: block;
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius);
+  background: var(--surface2);
+  font-size: var(--fs-lg);
+  letter-spacing: 0.06em;
+  word-spacing: 0.2em;
+  white-space: normal;
+}
+
+.chart-sub { margin-top: calc(-1 * var(--space-2)); }
+
+.evidence-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+button.btn-issue {
+  min-height: 56px;
+  padding: 0 var(--space-6);
+  background: var(--red);
+  color: var(--on-red);
+  font-size: var(--fs-lg);
+}
+
+.notice-status {
+  margin: 0;
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius);
+  border-left: 5px solid var(--green);
+  background: var(--green-soft);
+  font-weight: 600;
+}
+
+.notice-status--pending {
+  border-left-color: var(--amber);
+  background: var(--amber-soft);
+}
+
+@media (max-width: 899px) {
+  .facts-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 559px) {
+  .facts-grid { grid-template-columns: 1fr; }
+  .evidence-head { flex-direction: column; align-items: flex-start; }
+  .evidence-actions > * { width: 100%; }
+}

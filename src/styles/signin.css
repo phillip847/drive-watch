@@ -1,0 +1,48 @@
+.signin {
+  display: grid;
+  place-items: center;
+  min-height: 100dvh;
+  padding: var(--space-4);
+}
+
+.signin-card {
+  width: 100%;
+  max-width: 460px;
+  padding: var(--space-6);
+}
+
+.signin-brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  margin-bottom: var(--space-5);
+}
+
+.signin-brand h1 { margin: 0; }
+.signin-brand p { margin: 0; }
+
+.signin button[type='submit'] {
+  min-height: 56px;
+  font-size: var(--fs-lg);
+}
+
+.demo {
+  margin-top: var(--space-5);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--line);
+}
+
+.demo-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.demo-buttons button {
+  flex: 1 1 120px;
+  padding: 0 var(--space-3);
+}
+
+@media (max-width: 479px) {
+  .signin-card { padding: var(--space-5); }
+}
