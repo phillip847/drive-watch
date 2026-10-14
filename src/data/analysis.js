@@ -146,7 +146,7 @@ export function withLiveFeed(vehicleData, feed) {
   return {
     ...vehicleData,
     liveIdx: feed.samples.length - 1,
-    trips: [{ ...live, samples: feed.samples, totalSamples: feed.raw.length, ended: feed.ended }, ...rest],
+    trips: [{ ...live, samples: feed.samples, totalSamples: feed.total, ended: feed.ended }, ...rest],
   };
 }
 

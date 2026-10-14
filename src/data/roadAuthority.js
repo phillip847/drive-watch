@@ -10,8 +10,3 @@ export const ROAD_AUTHORITY_UPDATES = [
   },
 ];
 
-// The newest update not yet applied, or null when the tablet is up to date.
-export function findRoadUpdate(appliedVersions) {
-  const latest = ROAD_AUTHORITY_UPDATES[ROAD_AUTHORITY_UPDATES.length - 1];
-  return latest && !appliedVersions.includes(latest.version) ? latest : null;
-}

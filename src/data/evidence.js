@@ -39,23 +39,31 @@ export function buildEvidence(vehicleData, tripIndex, violationIndex, defaultRoa
   const to = violation.end + WINDOW_SEC * 1000;
   const windowSamples = samples.filter((s) => s.t >= from && s.t <= to);
 
-  // Field order is fixed, so the same evidence always hashes to the same fingerprint.
+  // An evidence_record row. Field order is fixed, so the same evidence always
+  // hashes to the same fingerprint.
   const record = {
-    evidenceNo,
-    vehicle: { disc: vehicle.disc, reg: vehicle.reg, make: vehicle.make, owner: vehicle.owner, ecu: vehicle.ecu },
-    road: peak.road,
-    segment: peak.seg,
-    roadVersion: peak.roadVersion ?? defaultRoadVersion,
-    limit: peak.limit,
-    peakSpeed: peak.speed,
-    excess: violation.excess,
-    peakTime: peak.t,
-    overFrom: violation.start,
-    overTo: violation.end,
-    durationSec: violation.duration,
-    position: { lat: peak.lat, lng: peak.lng, accuracyM: GPS_ACCURACY_M },
+    evidence_number: evidenceNo,
+    disc_number: vehicle.disc,
+    registration_number: vehicle.reg,
+    make_model: vehicle.make,
+    owner_name: vehicle.owner,
+    ecu_serial: vehicle.ecu,
+    road_name: peak.road,
+    segment_id: peak.seg,
+    road_data_version: peak.roadVersion ?? defaultRoadVersion,
+    speed_limit_kmh: peak.limit,
+    peak_speed_kmh: peak.speed,
+    excess_kmh: violation.excess,
+    peak_at: peak.t,
+    over_from: violation.start,
+    over_to: violation.end,
+    duration_s: violation.duration,
+    latitude: peak.lat,
+    longitude: peak.lng,
+    gps_accuracy_m: GPS_ACCURACY_M,
     source: `${vehicle.ecu}, ECU speed with GPS fix ±${GPS_ACCURACY_M} m`,
-    samples: samples.slice(violation.startIdx, violation.endIdx + 1).map((s) => [s.t, s.speed, s.limit]),
+    // [recorded_at, speed_kmh, speed_limit_kmh] for each driving record over the limit
+    driving_records: samples.slice(violation.startIdx, violation.endIdx + 1).map((s) => [s.t, s.speed, s.limit]),
   };
 
   return {

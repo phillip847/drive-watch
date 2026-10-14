@@ -19,10 +19,10 @@ describe('evidence', () => {
     const tripIndex = profileOf(data).trips.findIndex((t) => !t.live && t.viol.length > 0);
     const ev = buildEvidence(data, tripIndex, 0, '2 Oct 2026');
     const { violation, windowSamples, record } = ev;
-    expect(record.peakSpeed).toBe(violation.peak);
-    expect(record.limit).toBe(violation.limit);
-    expect(record.roadVersion).toBe('2 Oct 2026');
-    expect(record.samples).toHaveLength(violation.endIdx - violation.startIdx + 1);
+    expect(record.peak_speed_kmh).toBe(violation.peak);
+    expect(record.speed_limit_kmh).toBe(violation.limit);
+    expect(record.road_data_version).toBe('2 Oct 2026');
+    expect(record.driving_records).toHaveLength(violation.endIdx - violation.startIdx + 1);
     expect(windowSamples[0].t).toBeGreaterThanOrEqual(violation.start - WINDOW_SEC * 1000);
     expect(windowSamples.at(-1).t).toBeLessThanOrEqual(violation.end + WINDOW_SEC * 1000);
     expect(ev.ongoing).toBe(false);

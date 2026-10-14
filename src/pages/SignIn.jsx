@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { useApp } from '../state/AppContext.jsx';
-import { checkSignIn, homeFor } from '../state/auth.js';
+import { homeFor, signInMessage, validateSignIn } from '../state/auth.js';
 import SpeedSign from '../components/SpeedSign.jsx';
 import '../styles/signin.css';
 
@@ -12,11 +12,12 @@ const DEMO = [
 ];
 
 export default function SignIn() {
-  const { state, currentUser, signIn, addAudit } = useApp();
+  const { currentUser, signIn } = useApp();
   const navigate = useNavigate();
   const [forceNumber, setForceNumber] = useState(DEMO[0].id);
   const [pin, setPin] = useState(DEMO[0].pin);
   const [error, setError] = useState('');
+  const [busy, setBusy] = useState(false);
 
   if (currentUser) return <Navigate to={homeFor(currentUser)} replace />;
 
@@ -26,15 +27,20 @@ export default function SignIn() {
     setError('');
   }
 
-  function submit(e) {
+  async function submit(e) {
     e.preventDefault();
-    const result = checkSignIn(state.users, forceNumber, pin);
-    if (result.error) {
-      setError(result.error);
-      if (result.user) addAudit(`Failed sign-in: ${result.error}`, result.user.name);
+    const invalid = validateSignIn(forceNumber, pin);
+    if (invalid) {
+      setError(invalid);
       return;
     }
-    signIn(result.user.id);
+    setBusy(true);
+    const result = await signIn(forceNumber, pin);
+    setBusy(false);
+    if (result.error) {
+      setError(signInMessage(result.error, forceNumber));
+      return;
+    }
     navigate(homeFor(result.user), { replace: true });
   }
 
@@ -78,7 +84,7 @@ export default function SignIn() {
           </p>
         )}
 
-        <button type="submit" className="btn-block">Sign in</button>
+        <button type="submit" className="btn-block" disabled={busy}>{busy ? 'Signing in…' : 'Sign in'}</button>
 
         <div className="demo">
           <p className="field-label">Demo accounts</p>

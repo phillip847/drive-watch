@@ -2,10 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useApp } from '../../state/AppContext.jsx';
 import { useLiveVehicle } from '../../state/useLiveVehicle.js';
-import { BASE_ROAD_VERSION } from '../../state/initialState.js';
-import { nextNoticeId } from '../../state/reducer.js';
 import { buildEvidence, fingerprint, groupHex } from '../../data/evidence.js';
-import { segmentType } from '../../data/roads.js';
 import { useToast } from '../../components/Toast.jsx';
 import SpeedChart from '../../components/SpeedChart.jsx';
 import SpeedSign from '../../components/SpeedSign.jsx';
@@ -41,14 +38,15 @@ function Fact({ label, children, wide }) {
 
 export default function Evidence() {
   const { tripIndex, violationIndex } = useParams();
-  const { state, currentUser, issueNotice } = useApp();
+  const { state, issueNotice } = useApp();
+  const [issuing, setIssuing] = useState(false);
   const toast = useToast();
   const navigate = useNavigate();
   const data = useLiveVehicle();
 
   const hasSelection = tripIndex !== undefined && violationIndex !== undefined;
   const ev = useMemo(
-    () => (data && hasSelection ? buildEvidence(data, Number(tripIndex), Number(violationIndex), BASE_ROAD_VERSION) : null),
+    () => (data && hasSelection ? buildEvidence(data, Number(tripIndex), Number(violationIndex)) : null),
     [data, hasSelection, tripIndex, violationIndex]
   );
   const hash = useFingerprint(ev?.record);
@@ -71,21 +69,16 @@ export default function Evidence() {
 
   const { record, violation, peak, windowSamples, timeOffset, ongoing } = ev;
   const vehicle = data.vehicle;
-  const notice = state.issuedNotices.find((n) => n.evidenceNo === ev.evidenceNo);
+  const segmentType = state.roads.segments.find((x) => x.id === record.segment_id)?.type;
+  const notice = state.notices.find((n) => n.evidenceNo === ev.evidenceNo);
+  const savedOffline = !notice && state.outbox.some((i) => i.kind === 'notice' && i.evidenceNo === ev.evidenceNo);
 
-  function issue() {
-    const id = nextNoticeId(state, Date.now());
-    issueNotice({
-      id,
-      evidenceNo: ev.evidenceNo,
-      disc: vehicle.disc,
-      reg: vehicle.reg,
-      owner: vehicle.owner,
-      fingerprint: hash,
-      officer: currentUser.name,
-    });
-    if (state.online) {
-      toast.show(`Notice issued to the registered owner. Reference ${id}.`, { tone: 'success' });
+  async function issue() {
+    setIssuing(true);
+    const result = await issueNotice({ evidence: ev, fingerprintHex: hash, vehicle });
+    setIssuing(false);
+    if (result.notice) {
+      toast.show(`Notice issued to the registered owner. Reference ${result.notice.id}.`, { tone: 'success' });
     } else {
       toast.show('Notice saved on this tablet. It will be issued when back online.', { tone: 'warning' });
     }
@@ -99,7 +92,7 @@ export default function Evidence() {
           <p className="muted">Speeding record built from ECU and GPS data, in place of a fixed speed camera.</p>
         </div>
         <div className="evidence-head-sign">
-          <SpeedSign limit={record.limit} size={72} />
+          <SpeedSign limit={record.speed_limit_kmh} size={72} />
           <SeverityChip severity={violation.severity} />
         </div>
       </header>
@@ -120,25 +113,25 @@ export default function Evidence() {
           </Fact>
           <Fact label="Disc"><span className="num">{vehicle.disc}</span></Fact>
           <Fact label="Road">
-            {record.road}
-            <span className="fact-sub">{segmentType(record.segment)}</span>
+            {record.road_name}
+            {segmentType && <span className="fact-sub">{segmentType}</span>}
           </Fact>
           <Fact label="Road segment">
-            <span className="num">{record.segment}</span>
-            <span className="fact-sub">Road Authority data {record.roadVersion}</span>
+            <span className="num">{record.segment_id}</span>
+            <span className="fact-sub">Road Authority data {record.road_data_version}</span>
           </Fact>
-          <Fact label="Posted limit"><span className="num">{record.limit}</span> km/h</Fact>
+          <Fact label="Posted limit"><span className="num">{record.speed_limit_kmh}</span> km/h</Fact>
           <Fact label="Peak speed">
-            <span className="fact-big num">{Math.round(record.peakSpeed)}</span> km/h
-            <span className="fact-sub"><span className="num">{Math.round(record.excess)}</span> km/h over the limit</span>
+            <span className="fact-big num">{Math.round(record.peak_speed_kmh)}</span> km/h
+            <span className="fact-sub"><span className="num">{Math.round(record.excess_kmh)}</span> km/h over the limit</span>
           </Fact>
-          <Fact label="Time at peak"><span className="num">{formatDateTimeFull(record.peakTime)}</span></Fact>
+          <Fact label="Time at peak"><span className="num">{formatDateTimeFull(record.peak_at)}</span></Fact>
           <Fact label="Over the limit">
-            From <span className="num">{formatDateTimeFull(record.overFrom)}</span>
-            <span className="fact-sub">for <span className="num">{formatDuration(record.durationSec)}</span></span>
+            From <span className="num">{formatDateTimeFull(record.over_from)}</span>
+            <span className="fact-sub">for <span className="num">{formatDuration(record.duration_s)}</span></span>
           </Fact>
           <Fact label="GPS position at peak">
-            <span className="num">{formatLatLng(record.position.lat, record.position.lng)}</span>
+            <span className="num">{formatLatLng(record.latitude, record.longitude)}</span>
           </Fact>
           <Fact label="Source" wide>{record.source}</Fact>
           <Fact label="Record fingerprint (SHA-256)" wide>
@@ -167,15 +160,19 @@ export default function Evidence() {
         <button type="button" className="btn-secondary" onClick={() => navigate('/warnings')}>
           Back to warnings
         </button>
-        {notice ? (
-          <p className={`notice-status notice-status--${notice.status}`} role="status">
-            {notice.status === 'issued'
-              ? <>Notice issued to the registered owner. Reference <span className="num">{notice.id}</span>.</>
-              : <>Notice <span className="num">{notice.id}</span> saved on this tablet. It will be issued when back online.</>}
+        {notice && (
+          <p className="notice-status" role="status">
+            Notice issued to the registered owner. Reference <span className="num">{notice.id}</span>.
           </p>
-        ) : (
-          <button type="button" className="btn-issue" onClick={issue} disabled={ongoing || !hash}>
-            Issue notice
+        )}
+        {savedOffline && (
+          <p className="notice-status notice-status--pending" role="status">
+            Notice saved on this tablet. It will be issued when back online.
+          </p>
+        )}
+        {!notice && !savedOffline && (
+          <button type="button" className="btn-issue" onClick={issue} disabled={ongoing || !hash || issuing}>
+            {issuing ? 'Issuing…' : 'Issue notice'}
           </button>
         )}
       </div>

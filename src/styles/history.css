@@ -15,37 +15,7 @@
   border-radius: 3px;
 }
 
-/* The table scrolls sideways inside its card on small screens. */
-.table-scroll {
-  overflow-x: auto;
-  margin: 0 calc(-1 * var(--space-2));
-  padding: 0 var(--space-2);
-  -webkit-overflow-scrolling: touch;
-}
-
-.trip-table {
-  width: 100%;
-  min-width: 720px;
-  border-collapse: collapse;
-}
-
-.trip-table th,
-.trip-table td {
-  padding: var(--space-3);
-  border-bottom: 1px solid var(--line);
-  text-align: left;
-  white-space: nowrap;
-}
-
-.trip-table th {
-  color: var(--muted);
-  font-size: var(--fs-sm);
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-
-.trip-table .n { text-align: right; }
+.trip-table { min-width: 720px; }
 
 .trip-table tbody tr {
   height: 60px;

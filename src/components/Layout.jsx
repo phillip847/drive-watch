@@ -37,19 +37,20 @@ export default function Layout() {
   }, [vehicleData]);
   const badges = { warnings: warningCount };
 
-  function toggleOnline() {
+  async function toggleOnline() {
     if (state.online) {
-      setOnline(false);
+      await setOnline(false);
       toast.show('Offline. ECU data is buffered on the vehicle unit and synced later.', { tone: 'warning' });
     } else {
       const n = state.bufferedCount;
-      setOnline(true);
-      toast.show(`Back online. Synced ${n} buffered ECU record${n === 1 ? '' : 's'}.`, { tone: 'success' });
+      const notices = await setOnline(true);
+      const extra = notices ? ` Issued ${notices} saved notice${notices === 1 ? '' : 's'}.` : '';
+      toast.show(`Back online. Synced ${n} buffered ECU record${n === 1 ? '' : 's'}.${extra}`, { tone: 'success' });
     }
   }
 
-  function handleSignOut() {
-    signOut();
+  async function handleSignOut() {
+    await signOut();
     navigate('/signin', { replace: true });
   }
 

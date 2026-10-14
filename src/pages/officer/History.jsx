@@ -1,7 +1,6 @@
 import { useMemo, useState } from 'react';
 import { useLiveVehicle } from '../../state/useLiveVehicle.js';
 import { classify, profileOf } from '../../data/analysis.js';
-import { ROUTES } from '../../data/roads.js';
 import ScoreBarChart from '../../components/ScoreBarChart.jsx';
 import SpeedChart from '../../components/SpeedChart.jsx';
 import RiskChip from '../../components/RiskChip.jsx';
@@ -10,10 +9,7 @@ import '../../styles/history.css';
 
 const shortRoad = (name) => name.split(',')[0];
 
-function routeSummary(routeIndex) {
-  const segs = ROUTES[routeIndex].segments;
-  return `${shortRoad(segs[0].road)} → ${shortRoad(segs[segs.length - 1].road)}`;
-}
+const routeSummary = (trip) => `${shortRoad(trip.startRoad)} → ${shortRoad(trip.endRoad)}`;
 
 const isToday = (ms) => new Date(ms).toDateString() === new Date().toDateString();
 
@@ -32,7 +28,7 @@ export default function History() {
       label: isToday(t.start) ? 'Today' : formatDate(t.start).replace(/^\w+ /, ''),
       dateText: t.live ? 'Today (in progress)' : formatDateTime(t.start),
       fullLabel: t.live ? 'Current trip' : `${formatDate(t.start)}, ${formatClock(t.start)}`,
-      route: routeSummary(trip.routeIndex),
+      route: routeSummary(trip),
       km: t.km,
       durationSec: t.durationSec,
       warnings: t.viol.length,
@@ -73,7 +69,7 @@ export default function History() {
       <div className="card">
         <h2>Trips</h2>
         <div className="table-scroll">
-          <table className="trip-table">
+          <table className="data-table trip-table">
             <thead>
               <tr>
                 <th scope="col">Date</th>
